@@ -1,217 +1,64 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080b18">
-  <title>Robocode — цифрова міні-візитка</title>
-  <style>
-    :root {
-      --bg: #080b18; --panel: #11182b; --panel2: #17213a;
-      --cyan: #00f5d4; --pink: #ff4fd8; --text: #f4f7ff; --muted: #a6b2ca;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; padding: 28px 16px;
-      color: var(--text); font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-      background: radial-gradient(ellipse at 15% 5%, #17345a 0, transparent 35%),
-                  radial-gradient(ellipse at 90% 85%, #3a1649 0, transparent 30%), var(--bg);
-    }
-    .wrap { width: min(980px, 100%); margin: auto; }
-    header { text-align: center; margin-bottom: 26px; }
-    .eyebrow { color: var(--cyan); font-size: .78rem; letter-spacing: .25em; font-weight: 800; }
-    h1 { margin: 8px 0; font-size: clamp(1.8rem, 5vw, 2.7rem); }
-    header p { color: var(--muted); margin: 0; }
-    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 18px; }
-    .panel {
-      padding: 22px; border: 1px solid #28415d; border-radius: 18px;
-      background: rgba(17, 24, 43, .92); box-shadow: 0 12px 40px #0005;
-    }
-    h2 { margin: 0 0 18px; color: var(--cyan); font-size: 1.1rem; }
-    label { display: block; margin: 14px 0 6px; color: #d9e4f7; font-size: .9rem; }
-    input {
-      width: 100%; padding: 12px 13px; border-radius: 9px;
-      border: 1px solid #3a5272; background: #080f20; color: white; font: inherit;
-    }
-    input:focus { outline: 2px solid var(--cyan); border-color: transparent; }
-    .help { color: var(--muted); font-size: .8rem; line-height: 1.45; margin: 6px 0 0; }
-    button {
-      border: 0; border-radius: 9px; padding: 12px 16px; font: inherit;
-      font-weight: 750; cursor: pointer; background: var(--cyan); color: #06131a;
-    }
-    button.secondary { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); }
-    .actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
-    .business-card {
-      min-height: 285px; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center; padding: 28px 20px;
-      border: 1px solid var(--cyan); border-radius: 16px;
-      background: linear-gradient(145deg, #182641, #101326 70%);
-      box-shadow: 0 0 28px #00f5d422, inset 0 0 22px #ff4fd811;
-    }
-    .avatar {
-      width: 66px; height: 66px; display: grid; place-items: center; border-radius: 50%;
-      color: var(--cyan); font-size: 1.8rem; font-weight: 900;
-      border: 1px solid var(--pink); background: #0b1428; margin-bottom: 14px;
-    }
-    .business-card h3 { margin: 0; font-size: 1.65rem; overflow-wrap: anywhere; }
-    .role { color: var(--cyan); margin: 8px 0 20px; }
-    .profile-link {
-      display: inline-block; max-width: 100%; overflow-wrap: anywhere;
-      padding: 11px 17px; border-radius: 8px; background: var(--pink);
-      color: #1a0820; text-decoration: none; font-weight: 800;
-    }
-    #qr { display: grid; place-items: center; min-height: 190px; margin: 18px auto 8px; }
-    #qr canvas, #qr img { max-width: 100%; border: 8px solid white; border-radius: 8px; }
-    .notice {
-      margin: 18px 0 0; padding: 12px 14px; border-left: 3px solid var(--pink);
-      color: var(--muted); background: #0b1020; font-size: .83rem; line-height: 1.5;
-    }
-    .status { min-height: 1.3em; color: var(--cyan); font-size: .85rem; }
-    footer { text-align: center; color: #7888a5; font-size: .78rem; margin: 24px 0 4px; }
-    @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кібер-візитка</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body { background:#0f172a; color:#f8fafc; font-family:sans-serif; display:flex;
+         justify-content:center; align-items:center; min-height:100vh; margin:0; }
+  .card { background:#1e293b; padding:30px; border-radius:16px; text-align:center;
+          width:300px; border:2px solid #00ffcc; box-shadow:0 10px 25px rgba(0,255,204,.2); }
+  h1 { color:#00ffcc; font-size:24px; margin:0 0 5px; }
+  p { color:#94a3b8; font-size:14px; margin-bottom:20px; }
+  input { width:100%; box-sizing:border-box; padding:10px; margin:6px 0; border-radius:8px; border:0; }
+  .btn { display:block; background:#00ffcc; color:#0f172a; padding:12px; border-radius:8px;
+         text-decoration:none; font-weight:bold; border:0; width:100%; cursor:pointer; margin-top:10px; }
+  #qr { background:#fff; padding:10px; border-radius:8px; display:inline-block; margin-top:15px; }
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <div class="eyebrow">ROBOCODE • DIGITAL ID</div>
-      <h1>Моя кібер-візитка</h1>
-      <p>Створи власну міні-сторінку та QR-код для обміну.</p>
-    </header>
+<div class="card" id="card"></div>
+<script>
+const params = new URLSearchParams(location.search);
+const card = document.getElementById("card");
 
-    <div class="layout">
-      <section class="panel">
-        <h2>1. Налаштуй візитку</h2>
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text) e.textContent = text;      // textContent — безпечно, без вставки HTML
+  if (cls) e.className = cls;
+  return e;
+}
 
-        <label for="name">Ім’я або псевдонім</label>
-        <input id="name" maxlength="40" value="Ім'я Креатора" autocomplete="off">
+if (params.get("n")) {
+  // РЕЖИМ ВІЗИТКИ
+  card.append(el("h1", params.get("n")), el("p", params.get("r") || "Учень Robocode"));
+  const link = params.get("l");
+  if (link && /^https?:\/\//.test(link)) {  // дозволяємо лише http(s)-посилання
+    const a = el("a", "Мій проєкт / контакт", "btn");
+    a.href = link;
+    card.append(a);
+  }
+} else {
+  // РЕЖИМ ФОРМИ
+  card.append(el("h1", "Створи візитку"));
+  const name = el("input"); name.placeholder = "Ім'я";
+  const role = el("input"); role.placeholder = "Статус (Кібер-інженер...)";
+  const link = el("input"); link.placeholder = "Посилання (https://...)";
+  const btn = el("button", "Згенерувати QR", "btn");
+  const qr = el("div"); qr.id = "qr"; qr.style.display = "none";
+  card.append(name, role, link, btn, qr);
 
-        <label for="role">Статус</label>
-        <input id="role" maxlength="60" value="Кібер-інженер Robocode" autocomplete="off">
-
-        <label for="link">Посилання на проєкт або спільний чат (необов’язково)</label>
-        <input id="link" type="url" placeholder="https://example.com" inputmode="url">
-        <p class="help">Використовуй лише посилання, яким безпечно ділитися. Не додавай адресу, номер телефону, школу чи особисті акаунти дитини.</p>
-
-        <div class="actions">
-          <button id="update" type="button">Оновити візитку</button>
-          <button id="copy" class="secondary" type="button">Копіювати посилання</button>
-        </div>
-        <p class="status" id="status" role="status" aria-live="polite"></p>
-      </section>
-
-      <section class="panel">
-        <h2>2. Перегляд і QR-код</h2>
-        <article class="business-card">
-          <div class="avatar" id="avatar">R</div>
-          <h3 id="preview-name">Ім'я Креатора</h3>
-          <p class="role" id="preview-role">Кібер-інженер Robocode</p>
-          <a class="profile-link" id="preview-link" href="#" hidden target="_blank" rel="noopener noreferrer">Мій проєкт</a>
-        </article>
-        <div id="qr" aria-label="QR-код"></div>
-        <p class="help" style="text-align:center">QR-код відкриває цю візитку з указаними ім’ям, статусом і посиланням.</p>
-        <div class="actions" style="justify-content:center">
-          <button id="download" class="secondary" type="button">Завантажити QR PNG</button>
-        </div>
-      </section>
-    </div>
-
-    <p class="notice">
-      Важливо: спочатку опублікуй цей HTML-файл на HTTPS-хостингу (наприклад, GitHub Pages).
-      Лише тоді QR-код відкриватиме візитку на інших телефонах. Якщо відкрити файл локально,
-      QR-код працюватиме тільки як посилання на локальний файл і не буде доступний іншим.
-    </p>
-    <footer>Robocode · Персональна цифрова міні-візитка</footer>
-  </main>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script>
-    const $ = (id) => document.getElementById(id);
-    let currentUrl = location.href.split('?')[0].split('#')[0];
-
-    function safeHttpUrl(value) {
-      if (!value.trim()) return '';
-      try {
-        const url = new URL(value.trim());
-        return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : null;
-      } catch { return null; }
-    }
-
-    function getDataFromUrl() {
-      const params = new URLSearchParams(location.search);
-      if (params.has('name')) $('name').value = params.get('name').slice(0, 40);
-      if (params.has('role')) $('role').value = params.get('role').slice(0, 60);
-      if (params.has('link')) $('link').value = params.get('link').slice(0, 500);
-    }
-
-    function updateCard() {
-      const name = $('name').value.trim().slice(0, 40) || 'Robocode Creator';
-      const role = $('role').value.trim().slice(0, 60) || 'Учасник Robocode';
-      const link = safeHttpUrl($('link').value);
-      if (link === null) {
-        $('status').textContent = 'Посилання має починатися з http:// або https://.';
-        return false;
-      }
-
-      $('preview-name').textContent = name;
-      $('preview-role').textContent = role;
-      $('avatar').textContent = [...name][0]?.toUpperCase() || 'R';
-
-      const linkButton = $('preview-link');
-      if (link) {
-        linkButton.href = link;
-        linkButton.hidden = false;
-      } else {
-        linkButton.hidden = true;
-        linkButton.removeAttribute('href');
-      }
-
-      const params = new URLSearchParams({ name, role });
-      if (link) params.set('link', link);
-      const shareUrl = currentUrl + '?' + params.toString();
-
-      $('qr').innerHTML = '';
-      if (typeof QRCode === 'undefined') {
-        $('status').textContent = 'Не завантажилася бібліотека QR. Перевір інтернет і перезавантаж сторінку.';
-        return false;
-      }
-      new QRCode($('qr'), {
-        text: shareUrl, width: 180, height: 180,
-        colorDark: '#080b18', colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-      $('status').textContent = 'Візитку оновлено.';
-      $('copy').dataset.url = shareUrl;
-      return true;
-    }
-
-    $('update').addEventListener('click', updateCard);
-    $('copy').addEventListener('click', async () => {
-      const url = $('copy').dataset.url;
-      if (!url) return;
-      try {
-        await navigator.clipboard.writeText(url);
-        $('status').textContent = 'Посилання скопійовано.';
-      } catch {
-        $('status').textContent = 'Не вдалося скопіювати автоматично. Скопіюй адресу сторінки вручну.';
-      }
-    });
-    $('download').addEventListener('click', () => {
-      const canvas = $('qr').querySelector('canvas');
-      const img = $('qr').querySelector('img');
-      const dataUrl = canvas ? canvas.toDataURL('image/png') : img?.src;
-      if (!dataUrl) {
-        $('status').textContent = 'QR-код ще не створено.';
-        return;
-      }
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = 'robocode-qr.png';
-      a.click();
-    });
-
-    getDataFromUrl();
-    updateCard();
-  </script>
+  btn.onclick = () => {
+    const u = new URL(location.href.split("?")[0]);
+    u.searchParams.set("n", name.value || "Кібер-Гек");
+    u.searchParams.set("r", role.value);
+    if (link.value) u.searchParams.set("l", link.value);
+    qr.innerHTML = ""; qr.style.display = "inline-block";
+    new QRCode(qr, { text: u.toString(), width: 180, height: 180 });
+  };
+}
+</script>
 </body>
 </html>
